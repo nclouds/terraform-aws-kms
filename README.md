@@ -3,9 +3,36 @@
 ![Terraform](https://github.com/nclouds/terraform-boilerplate/workflows/Terraform/badge.svg)
 # nCode Library
 
-## terraform-boilerplate
+# Usage
 
-Description of what the module does and example use.
+## Simple setup
+
+Create simple KMS key 
+
+```hcl
+module "kms" {
+  source = "app.terraform.io/ncodelibrary/kms/aws"
+
+  deletion_window = 10
+  identifier      = "simple-example"
+}
+```
+
+## Advanced setup
+
+Create advanced KMS key 
+
+```hcl
+module "kms" {
+  source = "app.terraform.io/ncodelibrary/kms/aws"
+
+  deletion_window = 10
+  enable_alias    = true
+  description     = "my testing kms key"
+  identifier      = "advanced-example"
+  tags            = {}
+}
+```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
