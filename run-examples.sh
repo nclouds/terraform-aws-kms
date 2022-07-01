@@ -12,29 +12,45 @@ terraform_plan () {
     pwd
     terraform init 
     terraform validate -no-color
-    terraform plan
+    terraform plan -out plan.out 
+    terraform show -json plan.out 2>&1 | tee $BASEDIR/tfplan.json
     popd
 }
 
 run_examples () {
-    if [ -d examples ]
+    if [[ -d examples ]]
         then 
         EXAMPLES=$(find ./examples -mindepth 1 -maxdepth 1 -type d -exec echo {} \;)
-        if [ -z $EXAMPLES ]
+        if [[ -z $EXAMPLES ]]
             then 
             terraform_plan ./examples
         else
+            # Sort them in reverse order so that Simple Example is not run in the end
+            EXAMPLES=$(echo $EXAMPLES | xargs -n1 | sort -r | xargs)
             for EXAMPLE in $EXAMPLES
             do 
-                echo "Skipping anything which doesn't have a tf file "
-                TF_EXIST=$(find $EXAMPLE  -type f -name "*.tf" | wc -l)
-                if [ $TF_EXIST -gt 0 ]; then
-                    terraform_plan $EXAMPLE
-                fi
+            terraform_plan $EXAMPLE
             done
         fi
     else 
         echo "Examples not written yet for $SUB_MODULE" 
+        echo "Pushing a blank tfplan.json file to make OPA work"
+        cat > $BASEDIR/tfplan.json << EOF
+{
+  "format_version": "1.0",
+  "prior_state": "",
+  "configuration": "",
+  "planned_values": "",
+  "proposed_unknown": "",
+  "variables": {
+    "varname": {
+      "value": "varvalue"
+    }
+  },
+  "resource_changes": [],
+  "output_changes": {}
+}
+EOF
     fi
 }
 

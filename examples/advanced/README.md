@@ -23,7 +23,7 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to be applied to the resource | `map(any)` | <pre>{<br>  "Owner": "example@nclouds.com"<br>}</pre> | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags for the resource | `map(any)` | <pre>{<br>  "Cost_Center": "XYZ",<br>  "Environment": "dev",<br>  "Name": "Example",<br>  "Owner": "sysops",<br>  "Terraform": true,<br>  "env": "dev"<br>}</pre> | no |
 
 ## Outputs
 
