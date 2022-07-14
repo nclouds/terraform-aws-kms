@@ -12,6 +12,19 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           cli_config_credentials_token: ${{ secrets.NCODE_API_TOKEN }}
+          terraform_version: 1.1.2
+          terraform_wrapper: false
+
+      - name: Add SSH key
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+            echo "${{ secrets.NCODE_SSH_KEY }}" > /home/runner/.ssh/github_actions
+            chmod 600 /home/runner/.ssh/github_actions
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
+            ssh-add /home/runner/.ssh/github_actions
       
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,9 +44,56 @@ jobs:
       - name: 'Run Examples'
         env:
           AWS_REGION: us-east-1
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: ./run-examples.sh
 
+      - name: 'Pull Policies Repository'
+        uses: actions/checkout@v3
+        with:
+          repository: nclouds/terraform-opa-policies
+          ref: master
+          path: policies
+          token: ${{ secrets.NCODE_GITHUB_TOKEN }}
+
+      - name: 'Run OPA Policies'
+        uses: nclouds/opa-policies-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
       - name: "tfsec - Security Scan"
-        uses: aquasecurity/tfsec-pr-commenter-action@v1.0.2
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch Metadata for Slack Notify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(echo "$GITHUB_REF" | awk -F "/" '{print $(NF-1)}') 
+          PR_URL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/pull/$PR_NUMBER
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY" >> $GITHUB_ENV
+          REVIEWERS=($(curl -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER | jq -r '.requested_reviewers[].login'))
+          if [ $? -eq 0 ]; then
+            REVIEWERS=( "${REVIEWERS[@]/#/@}" )
+          else 
+            REVIEWERS=(@anupclouddevops @carlosrodf)
+          fi
+          echo "REVIEWERS=${REVIEWERS[@]}" >> $GITHUB_ENV
+        if: ${{ always() && github.event_name == 'pull_request' }}
+
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        env:
+          SLACK_CHANNEL: ncode-owners
+          SLACK_USERNAME: nCodeLibrary
+          SLACK_MSG_AUTHOR: ${{ env.GITHUB_ACTOR }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_TITLE: "Attention: ${{ env.REVIEWERS }}"
+          SLACK_MESSAGE: ${{ env.PR_URL }}
+          SLACK_ICON: https://ncodelibrary.com/themes/daux/img/logo.svg
+          SLACK_WEBHOOK: https://hooks.slack.com/services/${{ secrets.NCODE_SLACK_TOKEN }}
+          SLACK_FOOTER: "<https://ncodelibrary.com|ncodelibrary>"
+          MSG_MINIMAL: actions url,event,commit
