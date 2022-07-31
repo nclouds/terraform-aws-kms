@@ -21,9 +21,7 @@ No resources.
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags for the resource | `map(any)` | <pre>{<br>  "Cost_Center": "XYZ",<br>  "Environment": "dev",<br>  "Name": "Example",<br>  "Owner": "sysops",<br>  "Terraform": true,<br>  "env": "dev"<br>}</pre> | no |
+No inputs.
 
 ## Outputs
 
