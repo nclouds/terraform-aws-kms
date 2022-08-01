@@ -21,16 +21,20 @@ run_examples () {
     if [[ -d examples ]]
         then 
         EXAMPLES=$(find ./examples -mindepth 1 -maxdepth 1 -type d -exec echo {} \;)
-        if [[ -z $EXAMPLES ]]
-            then 
+        if [[ -z $EXAMPLES ]]; then 
             terraform_plan ./examples
         else
-            # Sort them in reverse order so that Simple Example is not run in the end
-            EXAMPLES=$(echo $EXAMPLES | xargs -n1 | sort -r | xargs)
             for EXAMPLE in $EXAMPLES
             do 
-            terraform_plan $EXAMPLE
+                if [[ "$EXAMPLE" != "./examples/simple" ]]; then
+                    echo "Running Example => $EXAMPLE"
+                    terraform_plan $EXAMPLE
+                fi
             done
+
+            # Run Simple Example in the end
+            echo "Running Example => ./examples/simple"
+            terraform_plan ./examples/simple
         fi
     else 
         echo "Examples not written yet for $SUB_MODULE" 

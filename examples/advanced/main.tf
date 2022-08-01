@@ -5,5 +5,4 @@ module "kms" {
   enable_alias    = true
   description     = "my testing kms key"
   identifier      = "advanced-example"
-  tags            = var.tags
 }
