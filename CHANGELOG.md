@@ -8,8 +8,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v0.1.3"></a>
+## [v0.1.3] - 2022-08-28
+FEATURES:
+- Automate Release Notes
+
+
 <a name="v0.1.2"></a>
-## [v0.1.2] - 2022-08-02
+## [v0.1.2] - 2022-08-20
 FEATURES:
 - ensure OPA compliance
 
@@ -26,6 +32,7 @@ DOCS:
 - module sources
 
 
-[Unreleased]: https://github.com/nclouds/terraform-aws-repo/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/nclouds/terraform-aws-repo/compare/v0.1.3...HEAD
+[v0.1.3]: https://github.com/nclouds/terraform-aws-repo/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/nclouds/terraform-aws-repo/compare/v0.1.1...v0.1.2
 [v0.1.1]: https://github.com/nclouds/terraform-aws-repo/compare/v0.1.0...v0.1.1
