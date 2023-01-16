@@ -11,7 +11,7 @@ Create simple KMS key
 
 ```hcl
 module "kms" {
-  source = "git@github.com:nclouds/terraform-aws-kms.git?ref=v0.1.4"
+  source = "github.com/nclouds/terraform-aws-kms?ref=v0.1.4"
 
   deletion_window = 10
   identifier      = "simple-example"
@@ -24,7 +24,7 @@ Create advanced KMS key
 
 ```hcl
 module "kms" {
-  source = "git@github.com:nclouds/terraform-aws-kms.git?ref=v0.1.4"
+  source = "github.com/nclouds/terraform-aws-kms?ref=v0.1.4"
 
   deletion_window = 10
   enable_alias    = true
@@ -49,7 +49,7 @@ No requirements.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_common_tags"></a> [common\_tags](#module\_common\_tags) | git@github.com:nclouds/terraform-aws-common-tags.git | v0.1.1 |
+| <a name="module_common_tags"></a> [common\_tags](#module\_common\_tags) | github.com/nclouds/terraform-aws-common-tags | v0.1.1 |
 
 ## Resources
 
